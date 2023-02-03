@@ -34,11 +34,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: Install Deps
         run: yarn install --frozen-lockfile
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.VAS_BUILD_TOKEN }}
       - id: set-test-chunks
         name: Set Chunks
-        run: echo "::set-output name=test-chunks::$(yarn --silent jest --listTests --json | jq -cM '[_nwise(length / 1 | floor)]')"
+        run: echo "::set-output name=test-chunks::$(yarn --silent jest --listTests --json | jq -cM '[_nwise(length / 2 | floor)]')"
       - id: set-test-chunk-ids
         name: Set Chunk IDs
         run: echo "::set-output name=test-chunk-ids::$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')"
