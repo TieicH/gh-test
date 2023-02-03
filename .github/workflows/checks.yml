@@ -55,9 +55,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          cache: 'yarn'
           registry-url: 'https://npm.pkg.github.com'
-      - name: Install Deps
-        run: yarn install --frozen-lockfile
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
         env:
