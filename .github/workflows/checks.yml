@@ -79,10 +79,8 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
       - name: Install Deps
+        if: needs.setup.outputs.node-modules-cache-hit
         run: yarn install --frozen-lockfile --prefer-offline
-          if: |
-          needs.setup.outputs.yarn-cache-hit ||
-          needs.setup.outputs.node-modules-cache-hit
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
         env:
