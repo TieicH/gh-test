@@ -14,8 +14,6 @@ jobs:
     outputs:
       test-chunks: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
       test-chunk-ids: ${{ steps['set-test-chunk-ids'].outputs['test-chunk-ids'] }}
-      yarn-cache-hit: ${{ steps.cache-yarn-cache.outputs.yarn-cache-hit }}
-      node-modules-cache-hit: ${{ steps.cache-node-modules.outputs.node-modules-cache-hit }}
     steps:
       - name: Checkout creating chunks
         uses: actions/checkout@v3
@@ -55,10 +53,6 @@ jobs:
         run: echo "::set-output name=test-chunk-ids::$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')"
         env:
           CHUNKS: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
-      - name: Saving Yarn Cache
-        run: echo "yarn-cache-hit=steps.cache-yarn-cache.outputs.cache-hit != 'true'" >> $GITHUB_OUTPUT
-      - name: Saving Node Cache
-        run: echo "node-modules-cache-hit=steps.cache-node-modules.outputs.cache-hit != 'true'" >> $GITHUB_OUTPUT
 
   tests:
     name: Test (chunk ${{ matrix.chunk }})
@@ -80,9 +74,26 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
+      - id: yarn-cache-dir-path
+        name: Get yarn cache directory path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - id: cache-yarn-cache
+        name: Cache yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - id: cache-node-modules
+        name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
       - name: Install Deps
-        if: needs.setup.outputs.node-modules-cache-hit
         run: yarn install --frozen-lockfile --prefer-offline
+        if: |
+        steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
+        steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
         env:
