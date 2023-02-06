@@ -24,14 +24,14 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
-      - name: Cache node_modules
-          id: cache-node-modules
-          uses: actions/cache@v2
-          with:
-            path: '**/node_modules'
-            key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
-            restore-keys: |
-                ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+      - id: cache-node-modules
+        name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+              ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
       - name: Install Deps
         run: yarn install --frozen-lockfile
       - id: set-test-chunks
