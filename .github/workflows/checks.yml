@@ -24,19 +24,19 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
+      - id: yarn-cache-dir-path
+        name: Get yarn cache directory path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache yarn cache
+      - id: cache-yarn-cache
+        name: Cache yarn cache
         uses: actions/cache@v3
-        id: cache-yarn-cache
         with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Cache node_modules
-        id: cache-node-modules
+      - id: cache-node-modules
+        name: Cache node_modules
         uses: actions/cache@v3
         with:
         path: node_modules
