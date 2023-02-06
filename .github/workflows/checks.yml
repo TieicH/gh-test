@@ -90,10 +90,8 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
       - name: Install Deps
+        if: steps.cache-yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --prefer-offline
-        if: |
-        steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
-        steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
         env:
