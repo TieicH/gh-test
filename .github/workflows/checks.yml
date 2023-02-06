@@ -28,7 +28,7 @@ jobs:
         name: Get yarn cache directory path
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - id: cache-yarn-cache
-        name: Cache yarn cache
+        name: Save yarn cache
         uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -36,7 +36,7 @@ jobs:
           restore-keys: |
               ${{ runner.os }}-yarn-
       - id: cache-node-modules
-        name: Cache node_modules
+        name: Save node_modules Cache
         uses: actions/cache@v3
         with:
           path: node_modules
@@ -78,19 +78,18 @@ jobs:
         name: Get yarn cache directory path
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - id: cache-yarn-cache
-        name: Cache yarn cache
+        name: Restore yarn cache
         uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - id: cache-node-modules
-        name: Cache node_modules
+        name: Restore node_modules Cache
         uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
       - name: Install Deps
-        if: steps.cache-yarn-cache.outputs.cache-hit != 'true' || steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --prefer-offline
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
