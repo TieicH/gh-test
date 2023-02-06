@@ -14,6 +14,8 @@ jobs:
     outputs:
       test-chunks: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
       test-chunk-ids: ${{ steps['set-test-chunk-ids'].outputs['test-chunk-ids'] }}
+      yarn-cache-hit: ${{ steps.cache-yarn-cache.outputs.yarn-cache-hit }}
+      node-modules-cache-hit: ${{ steps.cache-node-modules.outputs.node-modules-cache-hit }}
     steps:
       - name: Checkout creating chunks
         uses: actions/checkout@v3
@@ -31,18 +33,18 @@ jobs:
         name: Cache yarn cache
         uses: actions/cache@v3
         with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-            ${{ runner.os }}-yarn-
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+              ${{ runner.os }}-yarn-
       - id: cache-node-modules
         name: Cache node_modules
         uses: actions/cache@v3
         with:
-        path: node_modules
-        key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+          path: node_modules
+          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+              ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
       - name: Install Deps
         run: yarn install --frozen-lockfile
       - id: set-test-chunks
@@ -51,6 +53,8 @@ jobs:
       - id: set-test-chunk-ids
         name: Set Chunk IDs
         run: echo "::set-output name=test-chunk-ids::$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')"
+        run: echo "yarn-cache-hit=steps.cache-yarn-cache.outputs.cache-hit != 'true'" >> $GITHUB_OUTPUT
+        run: echo "node-modules-cache-hit=steps.cache-node-modules.outputs.cache-hit != 'true'" >> $GITHUB_OUTPUT
         env:
           CHUNKS: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
 
@@ -77,8 +81,8 @@ jobs:
       - name: Install Deps
         run: yarn install --frozen-lockfile --prefer-offline
           if: |
-          needs.setup.steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
-          needs.setup.steps.cache-node-modules.outputs.cache-hit != 'true'
+          needs.setup.outputs.yarn-cache-hit ||
+          needs.setup.outputs.node-modules-cache-hit
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
         env:
