@@ -77,8 +77,8 @@ jobs:
       - name: Install Deps
         run: yarn install --frozen-lockfile --prefer-offline
           if: |
-          steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
-          steps.cache-node-modules.outputs.cache-hit != 'true'
+          needs.setup.steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
+          needs.setup.steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Run tests
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test
         env:
