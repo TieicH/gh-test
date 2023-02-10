@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1675391192172" clover="3.2.0">
-  <project timestamp="1675391192172" name="All files">
-    <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4" elements="10" coveredelements="10" complexity="0" loc="6" ncloc="6" packages="1" files="2" classes="2"/>
+<coverage generated="1676037005272" clover="3.2.0">
+  <project timestamp="1676037005272" name="All files">
+    <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4" elements="12" coveredelements="12" complexity="0" loc="8" ncloc="8" packages="1" files="2" classes="2"/>
     <file name="helper.jsx" path="C:\papaEdison\githubactions\vite-project\src\helper.jsx">
       <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <line num="2" count="1" type="stmt"/>
@@ -9,10 +9,12 @@
       <line num="9" count="1" type="stmt"/>
     </file>
     <file name="helper1.jsx" path="C:\papaEdison\githubactions\vite-project\src\helper1.jsx">
-      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <line num="2" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
       <line num="6" count="1" type="stmt"/>
-      <line num="9" count="1" type="stmt"/>
+      <line num="10" count="1" type="stmt"/>
+      <line num="13" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>

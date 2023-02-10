@@ -1,4 +1,8 @@
+
+const _ = require('lodash');
+
 function mult(a, b) {
+    const aaaa = _.join(['a', 'b', 'c'], '~');
     return a * b;
 }
 
